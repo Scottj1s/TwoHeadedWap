@@ -1,0 +1,5 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<LayoutMap xmlns="http://schemas.microsoft.com/appx/2015/LayoutMap">
+  <FileMapping SourcePath="g:\issues\TwoHeaded\$(Platform)\$(configuration)\TwoHeaded\*" DestinationPath="TwoHeaded\" />
+  <FileMapping SourcePath="g:\issues\TwoHeaded\$(Platform)\$(configuration)\SecondApp\*" DestinationPath="SecondApp\" />
+</LayoutMap>

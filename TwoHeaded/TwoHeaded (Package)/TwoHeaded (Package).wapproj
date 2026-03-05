@@ -1,0 +1,217 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup Condition="'$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '15.0'">
+    <VisualStudioVersion>15.0</VisualStudioVersion>
+  </PropertyGroup>
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|x86">
+      <Configuration>Debug</Configuration>
+      <Platform>x86</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x86">
+      <Configuration>Release</Configuration>
+      <Platform>x86</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|ARM64">
+      <Configuration>Debug</Configuration>
+      <Platform>ARM64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|ARM64">
+      <Configuration>Release</Configuration>
+      <Platform>ARM64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup>
+    <WapProjPath Condition="'$(WapProjPath)'==''">$(MSBuildExtensionsPath)\Microsoft\DesktopBridge\</WapProjPath>
+    <DebuggerType>NativeOnly</DebuggerType>
+    <BackgroundTaskDebugEngines>NativeOnly</BackgroundTaskDebugEngines>
+  </PropertyGroup>
+  <Import Project="$(WapProjPath)\Microsoft.DesktopBridge.props" />
+  <PropertyGroup>
+    <ProjectGuid>a09ab9e9-4a53-4bf2-a62d-e7b8de0c491e</ProjectGuid>
+    <TargetPlatformVersion>10.0.26100.0</TargetPlatformVersion>
+    <TargetPlatformMinVersion>10.0.17763.0</TargetPlatformMinVersion>
+    <DefaultLanguage>en-US</DefaultLanguage>
+    <AppxPackageSigningEnabled>True</AppxPackageSigningEnabled>
+    <EntryPointProjectUniqueName>..\FirstApp\FirstApp.vcxproj</EntryPointProjectUniqueName>
+    <GenerateAppInstallerFile>False</GenerateAppInstallerFile>
+    <PackageCertificateKeyFile>TwoHeaded %28Package%29_TemporaryKey.pfx</PackageCertificateKeyFile>
+    <AppxPackageSigningTimestampDigestAlgorithm>SHA256</AppxPackageSigningTimestampDigestAlgorithm>
+    <AppxAutoIncrementPackageRevision>True</AppxAutoIncrementPackageRevision>
+    <AppxSymbolPackageEnabled>False</AppxSymbolPackageEnabled>
+    <GenerateTestArtifacts>True</GenerateTestArtifacts>
+    <AppxBundlePlatforms>x64</AppxBundlePlatforms>
+    <HoursBetweenUpdateChecks>0</HoursBetweenUpdateChecks>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x86'">
+    <AppxBundle>Always</AppxBundle>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">
+    <AppxBundle>Always</AppxBundle>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x86'">
+    <AppxBundle>Always</AppxBundle>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <AppxBundle>Always</AppxBundle>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">
+    <AppxBundle>Always</AppxBundle>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <AppxBundle>Always</AppxBundle>
+  </PropertyGroup>
+  <ItemGroup>
+    <Content Include="Images\SplashScreen.scale-200.png" />
+    <Content Include="Images\LockScreenLogo.scale-200.png" />
+    <Content Include="Images\Square150x150Logo.scale-200.png" />
+    <Content Include="Images\Square44x44Logo.scale-200.png" />
+    <Content Include="Images\Square44x44Logo.targetsize-24_altform-unplated.png" />
+    <Content Include="Images\StoreLogo.png" />
+    <Content Include="Images\Wide310x150Logo.scale-200.png" />
+    <None Include="TwoHeaded %28Package%29_TemporaryKey.pfx" />
+  </ItemGroup>
+    <ItemGroup>
+        <ProjectReference Include="..\FirstApp\FirstApp.vcxproj">
+            <PackageFolder>FirstApp</PackageFolder>
+        </ProjectReference>
+        <ProjectReference Include="..\SecondApp\SecondApp.vcxproj">
+            <PackageFolder>SecondApp</PackageFolder>
+        </ProjectReference>
+    </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Windows.SDK.BuildTools" Version="10.0.26100.7705" />
+    <PackageReference Include="Microsoft.WindowsAppSDK" Version="1.8.260209005" />
+  </ItemGroup>
+    <ItemGroup>
+        <AppxManifest Include="Package.appxmanifest">
+            <SubType>Designer</SubType>
+        </AppxManifest>
+    </ItemGroup>
+    <Import Project="$(WapProjPath)\Microsoft.DesktopBridge.targets" />
+
+  <!-- Place each app's files into its own subfolder within the MSIX package.
+       Shared dependencies (e.g. WebView2) stay at the package root. -->
+  <Target Name="_PrefixProjectOutputsWithSubfolder" AfterTargets="_ConvertItems">
+    <ItemGroup>
+      <!-- Move all FirstApp-owned files into FirstApp\ subfolder, except shared NuGet dependencies -->
+      <WapProjPackageFile Update="@(WapProjPackageFile)"
+          Condition="'%(SourceProject)' == 'FirstApp' AND !$([System.String]::new('%(Identity)').Contains('packages'))">
+        <TargetPath>FirstApp\%(TargetPath)</TargetPath>
+        <CopyToTargetPath>$([System.IO.Path]::Combine($([System.IO.Path]::GetDirectoryName('%(CopyToTargetPath)')), 'FirstApp', $([System.IO.Path]::GetFileName('%(CopyToTargetPath)'))))</CopyToTargetPath>
+      </WapProjPackageFile>
+      <!-- Move all SecondApp-owned files into SecondApp\ subfolder -->
+      <WapProjPackageFile Update="@(WapProjPackageFile)"
+          Condition="'%(SourceProject)' == 'SecondApp'">
+        <TargetPath>SecondApp\%(TargetPath)</TargetPath>
+        <CopyToTargetPath>$([System.IO.Path]::Combine($([System.IO.Path]::GetDirectoryName('%(CopyToTargetPath)')), 'SecondApp', $([System.IO.Path]::GetFileName('%(CopyToTargetPath)'))))</CopyToTargetPath>
+      </WapProjPackageFile>
+
+      <UploadWapProjPackageFile Update="@(UploadWapProjPackageFile)"
+          Condition="'%(SourceProject)' == 'FirstApp' AND !$([System.String]::new('%(Identity)').Contains('packages'))">
+        <TargetPath>FirstApp\%(TargetPath)</TargetPath>
+      </UploadWapProjPackageFile>
+      <UploadWapProjPackageFile Update="@(UploadWapProjPackageFile)"
+          Condition="'%(SourceProject)' == 'SecondApp'">
+        <TargetPath>SecondApp\%(TargetPath)</TargetPath>
+      </UploadWapProjPackageFile>
+
+      <!-- Also prefix PackagingOutputs so the payload duplicate check sees unique paths.
+           Items from project outputs (exe, dll) have MsbuildSourceProjectFile metadata.
+           Items from GetCopyToOutputDirectoryItemsOutputGroup (xbf) lack it, so match on
+           the parent directory of the Identity path instead. -->
+      <PackagingOutputs Update="@(PackagingOutputs)"
+          Condition="$([System.String]::new('%(PackagingOutputs.MsbuildSourceProjectFile)').EndsWith('FirstApp.vcxproj'))
+                     AND !$([System.String]::new('%(Identity)').Contains('packages'))
+                     AND '%(PackagingOutputs.TargetPath)' != ''">
+        <TargetPath>FirstApp\%(PackagingOutputs.TargetPath)</TargetPath>
+      </PackagingOutputs>
+      <PackagingOutputs Update="@(PackagingOutputs)"
+          Condition="$([System.String]::new('%(PackagingOutputs.MsbuildSourceProjectFile)').EndsWith('SecondApp.vcxproj'))
+                     AND '%(PackagingOutputs.TargetPath)' != ''">
+        <TargetPath>SecondApp\%(PackagingOutputs.TargetPath)</TargetPath>
+      </PackagingOutputs>
+      <!-- xbf items from GetCopyToOutputDirectoryItemsOutputGroup:
+           With XAML Link metadata set, xbf TargetPath already includes the project
+           subfolder (e.g., FirstApp\App.xbf), so no additional prefixing needed. -->
+
+      <!-- In Release, xbf files are embedded in resources.pri, so remove loose
+           xbf entries from all packaging item lists to avoid redundant files. -->
+      <WapProjPackageFile Remove="@(WapProjPackageFile)"
+          Condition="'$(Configuration)' == 'Release' AND '%(Extension)' == '.xbf'" />
+      <UploadWapProjPackageFile Remove="@(UploadWapProjPackageFile)"
+          Condition="'$(Configuration)' == 'Release' AND '%(Extension)' == '.xbf'" />
+      <PackagingOutputs Remove="@(PackagingOutputs)"
+          Condition="'$(Configuration)' == 'Release' AND '%(Extension)' == '.xbf'" />
+
+      <!-- Rebuild all derived item lists from the modified WapProjPackageFile -->
+      <_FileToCopy Remove="@(_FileToCopy)" />
+      <_FileToCopy Include="@(WapProjPackageFile)" />
+
+      <_UploadFileToCopy Remove="@(_UploadFileToCopy)" />
+      <_UploadFileToCopy Include="@(UploadWapProjPackageFile)" />
+
+      <AppxPackagePayload Remove="@(AppxPackagePayload)" />
+      <AppxPackagePayload Include="@(WapProjPackageFile)" />
+
+      <AppxUploadPackagePayload Remove="@(AppxUploadPackagePayload)" />
+      <AppxUploadPackagePayload Include="@(UploadWapProjPackageFile)" />
+    </ItemGroup>
+
+    <!-- Override the entry point exe path to include the subfolder -->
+    <PropertyGroup>
+      <EntryPointExe>FirstApp\$(EntryPointExe)</EntryPointExe>
+    </PropertyGroup>
+  </Target>
+
+  <!-- _ExpandedPriPayload xbf items already have subfolder-prefixed TargetPath
+       from the XAML Link metadata (e.g., FirstApp\App.xbf), so no additional
+       prefixing is needed. -->
+
+  <!-- Remove xbf entries from the package map file:
+       - Debug: removes root-level xbf entries (those without backslash) since they're
+         duplicated in subfolders as loose files.
+       - Release: removes ALL xbf entries since they're embedded in resources.pri.
+       Runs after the main package map file is generated but before MakeAppx packs it. -->
+  <Target Name="_CleanupRootDuplicatesAndAddSubfolderPri" AfterTargets="_UpdateMainPackageFileMap">
+    <PropertyGroup>
+      <_MainMapFullPath>$([System.IO.Path]::GetFullPath('$(IntermediateOutputPath)main.map.txt'))</_MainMapFullPath>
+      <_PackageMapFullPath>$([System.IO.Path]::GetFullPath('$(IntermediateOutputPath)package.map.txt'))</_PackageMapFullPath>
+      <_FilterScriptPath>$([System.IO.Path]::GetFullPath('$(IntermediateOutputPath)_filter-xbf-from-map.ps1'))</_FilterScriptPath>
+    </PropertyGroup>
+
+    <!-- Write a PowerShell script to remove xbf entries from map files.
+         In Release, xbf is embedded in PRI so ALL xbf map entries are redundant.
+         In Debug, only root-level xbf entries are redundant (subfolder ones are needed). -->
+    <WriteLinesToFile File="$(_FilterScriptPath)" Overwrite="true" Lines="
+param([string]$MapFile, [string]$Configuration)
+if (-not (Test-Path $MapFile)) { return }
+$lines = Get-Content $MapFile
+$filtered = $lines | Where-Object {
+    if ($_ -match '&quot;([^&quot;]+)&quot;\s*$') {
+        $target = $Matches[1]
+        if ($target -like '*.xbf') {
+            if ($Configuration -eq 'Release') { return $false }
+            if ($target -notlike '*\*') { return $false }
+        }
+    }
+    return $true
+}
+$filtered | Set-Content $MapFile -Encoding UTF8
+" />
+
+    <Message Text="[_CleanupXbfFromMap] Filtering xbf from map files (Configuration=$(Configuration))" Importance="high" />
+    <Exec Command="powershell -NoProfile -ExecutionPolicy Bypass -File &quot;$(_FilterScriptPath)&quot; -MapFile &quot;$(_MainMapFullPath)&quot; -Configuration &quot;$(Configuration)&quot;"
+          Condition="Exists('$(_MainMapFullPath)')" />
+    <Exec Command="powershell -NoProfile -ExecutionPolicy Bypass -File &quot;$(_FilterScriptPath)&quot; -MapFile &quot;$(_PackageMapFullPath)&quot; -Configuration &quot;$(Configuration)&quot;"
+          Condition="Exists('$(_PackageMapFullPath)')" />
+  </Target>
+</Project>
